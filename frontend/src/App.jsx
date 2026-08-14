@@ -26,7 +26,7 @@ import {
 
 import "./App.css";
 
-const API = "http://127.0.0.1:8000";
+const API = "https://ai-soc-analyst-sqmb.onrender.com";
 
 function App() {
   const [alerts, setAlerts] = useState([]);
