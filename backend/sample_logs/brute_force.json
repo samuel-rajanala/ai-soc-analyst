@@ -1,0 +1,47 @@
+[
+  {
+    "timestamp": "2026-08-10T11:00:00+00:00",
+    "source_ip": "192.168.1.45",
+    "destination": "ssh-server",
+    "username": "admin",
+    "event": "failed_login",
+    "status": "failure",
+    "device": "server-01"
+  },
+  {
+    "timestamp": "2026-08-10T11:00:20+00:00",
+    "source_ip": "192.168.1.45",
+    "destination": "ssh-server",
+    "username": "admin",
+    "event": "failed_login",
+    "status": "failure",
+    "device": "server-01"
+  },
+  {
+    "timestamp": "2026-08-10T11:00:40+00:00",
+    "source_ip": "192.168.1.45",
+    "destination": "ssh-server",
+    "username": "admin",
+    "event": "failed_login",
+    "status": "failure",
+    "device": "server-01"
+  },
+  {
+    "timestamp": "2026-08-10T11:01:00+00:00",
+    "source_ip": "192.168.1.45",
+    "destination": "ssh-server",
+    "username": "admin",
+    "event": "failed_login",
+    "status": "failure",
+    "device": "server-01"
+  },
+  {
+    "timestamp": "2026-08-10T11:01:20+00:00",
+    "source_ip": "192.168.1.45",
+    "destination": "ssh-server",
+    "username": "admin",
+    "event": "failed_login",
+    "status": "failure",
+    "device": "server-01"
+  }
+]

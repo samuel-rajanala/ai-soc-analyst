@@ -1,0 +1,355 @@
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="right-column">
+            <div className="panel threat-panel">
+              <div className="panel-header">
+                <div>
+                  <p className="panel-kicker">THREAT INTELLIGENCE</p>
+                  <h3>Latest Indicator</h3>
+                </div>
+
+                <Globe size={20} />
+              </div>
+
+              {latestAlert ? (
+                <>
+                  <div className="indicator">
+                    <div className="indicator-icon">
+                      <Globe size={22} />
+                    </div>
+
+                    <div>
+                      <span>IPv4 ADDRESS</span>
+                      <strong>{latestAlert.source_ip}</strong>
+                    </div>
+                  </div>
+
+                  <div className="intel-grid">
+                    <div>
+                      <span>REPUTATION</span>
+                      <strong className="private">
+                        PRIVATE
+                      </strong>
+                    </div>
+
+                    <div>
+                      <span>RISK</span>
+                      <strong>10 / 100</strong>
+                    </div>
+                  </div>
+
+                  <div className="intel-context">
+                    Private/internal IP address
+                  </div>
+                </>
+              ) : (
+                <div className="small-empty">
+                  No indicators available.
+                </div>
+              )}
+            </div>
+
+            <div className="panel mitre-panel">
+              <div className="panel-header">
+                <div>
+                  <p className="panel-kicker">ATT&CK FRAMEWORK</p>
+                  <h3>Technique</h3>
+                </div>
+              </div>
+
+              {latestAlert?.mitre_attack ? (
+                <div className="mitre-card">
+                  <div className="mitre-id">
+                    {latestAlert.mitre_attack.technique}
+                  </div>
+
+                  <div>
+                    <strong>
+                      {latestAlert.mitre_attack.name}
+                    </strong>
+                    <p>Brute Force</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="small-empty">
+                  No MITRE technique detected.
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        <footer>
+          <span>
+            <Clock3 size={14} />
+            {lastUpdated
+              ? `Updated ${lastUpdated.toLocaleTimeString()}`
+              : "Waiting for data"}
+          </span>
+
+          <span>AI JUNIOR SOC ANALYST v0.1.0</span>
+        </footer>
+      </main>
+
+      {selectedAlert && (
+        <InvestigationModal
+          selected={selectedAlert}
+          investigation={investigation}
+          investigating={investigating}
+          onClose={() => {
+            setSelectedAlert(null);
+            setInvestigation(null);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function StatCard({
+  icon,
+  label,
+  value,
+  sub,
+  danger,
+  online,
+}) {
+  return (
+    <div className="stat-card">
+      <div className="stat-icon">{icon}</div>
+
+      <div className="stat-content">
+        <span>{label}</span>
+        <strong className={danger ? "danger-text" : ""}>
+          {value}
+        </strong>
+        <small className={online ? "online-text" : ""}>
+          {sub}
+        </small>
+      </div>
+    </div>
+  );
+}
+
+function Incident({ alert, index, onClick }) {
+  const risk = alert.risk_score || 0;
+
+  return (
+    <button className="incident" onClick={onClick}>
+      <div className="incident-severity">
+        <span />
+      </div>
+
+      <div className="incident-main">
+        <div className="incident-title">
+          <strong>{alert.type}</strong>
+
+          <span className="severity-badge">
+            {alert.severity}
+          </span>
+        </div>
+
+        <p>{alert.description}</p>
+
+        <div className="incident-meta">
+          <span>
+            <Globe size={13} />
+            {alert.source_ip}
+          </span>
+
+          <span>
+            <Server size={13} />
+            {alert.username || "unknown"}
+          </span>
+
+          <span>
+            <Crosshair size={13} />
+            {alert.mitre_attack?.technique || "N/A"}
+          </span>
+        </div>
+      </div>
+
+      <div className="risk">
+        <span>RISK</span>
+        <strong>{risk}</strong>
+        <div className="risk-bar">
+          <i style={{ width: `${risk}%` }} />
+        </div>
+      </div>
+
+      <ChevronRight size={18} className="incident-arrow" />
+    </button>
+  );
+}
+
+function InvestigationModal({
+  selected,
+  investigation,
+  investigating,
+  onClose,
+}) {
+  const alert = selected.alert;
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div
+        className="investigation-modal"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <header className="modal-header">
+          <div>
+            <div className="ai-label">
+              <BrainCircuit size={16} />
+              AI INVESTIGATION
+            </div>
+
+            <h2>{alert.type}</h2>
+          </div>
+
+          <button className="close-button" onClick={onClose}>
+            <X size={20} />
+          </button>
+        </header>
+
+        <div className="modal-alert">
+          <div>
+            <span>SOURCE IP</span>
+            <strong>{alert.source_ip}</strong>
+          </div>
+
+          <div>
+            <span>RISK SCORE</span>
+            <strong>{alert.risk_score}/100</strong>
+          </div>
+
+          <div>
+            <span>ATTEMPTS</span>
+            <strong>{alert.attempts}</strong>
+          </div>
+
+          <div>
+            <span>MITRE</span>
+            <strong>
+              {alert.mitre_attack?.technique}
+            </strong>
+          </div>
+        </div>
+
+        {investigating ? (
+          <div className="ai-loading">
+            <div className="loader">
+              <BrainCircuit size={32} />
+            </div>
+
+            <h3>Qwen is investigating...</h3>
+
+            <p>
+              Analyzing alert evidence, threat intelligence
+              and MITRE ATT&CK context.
+            </p>
+
+            <div className="loading-line">
+              <span />
+            </div>
+          </div>
+        ) : investigation?.error ? (
+          <div className="ai-error">
+            <AlertTriangle size={24} />
+            <h3>Investigation failed</h3>
+            <p>{investigation.error}</p>
+          </div>
+        ) : investigation?.investigation ? (
+          <div className="investigation-content">
+            <div className="ai-summary">
+              <span>AI ASSESSMENT</span>
+              <h3>
+                {investigation.investigation.summary}
+              </h3>
+
+              <div className="confidence">
+                <span>CONFIDENCE</span>
+                <strong>
+                  {investigation.investigation.confidence}%
+                </strong>
+              </div>
+            </div>
+
+            <div className="investigation-grid">
+              <InfoBlock
+                title="Attack Type"
+                value={
+                  investigation.investigation.attack_type
+                }
+              />
+
+              <InfoBlock
+                title="Severity"
+                value={
+                  investigation.investigation.severity
+                }
+              />
+
+              <InfoBlock
+                title="MITRE ATT&CK"
+                value={`${investigation.investigation.mitre_attack?.technique || ""} — ${
+                  investigation.investigation.mitre_attack?.name || ""
+                }`}
+              />
+
+              <InfoBlock
+                title="Assessment"
+                value={
+                  investigation.investigation.assessment
+                }
+                wide
+              />
+            </div>
+
+            <div className="evidence-section">
+              <h3>Evidence</h3>
+
+              <ul>
+                {(
+                  investigation.investigation.evidence || []
+                ).map((item, i) => (
+                  <li key={i}>{item}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="actions-section">
+              <h3>Recommended Actions</h3>
+
+              <ol>
+                {(
+                  investigation.investigation
+                    .recommended_actions || []
+                ).map((item, i) => (
+                  <li key={i}>{item}</li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        ) : (
+          <div className="ai-loading">
+            <p>No investigation data returned.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function InfoBlock({ title, value, wide }) {
+  return (
+    <div className={`info-block ${wide ? "wide" : ""}`}>
+      <span>{title}</span>
+      <strong>{value || "N/A"}</strong>
+    </div>
+  );
+}
+
+export default App;
